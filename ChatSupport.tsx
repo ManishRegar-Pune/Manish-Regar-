@@ -1,208 +1,147 @@
-import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface Message {
-  id: string;
-  sender: "user" | "ai";
+  sender: 'ai' | 'user';
   text: string;
-  timestamp: number;
-  isTyping?: boolean;
 }
 
-interface ChatSupportProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-const ChatSupport = ({ isOpen, onClose }: ChatSupportProps) => {
+const ChatSupport = () => {
+  const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "welcome",
-      sender: "ai",
-      text: "Hello! I'm Manish Regar's AI assistant. How can I help you today?",
-      timestamp: Date.now(),
-    },
+    { 
+      sender: 'ai', 
+      text: "Hello! I'm Manish's customer support assistant. How can I help you today?" 
+    }
   ]);
-  const [inputValue, setInputValue] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
+  const [inputText, setInputText] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [mounted, setMounted] = useState(false);
-
-  // Sample AI responses for a more realistic experience
-  const aiResponses = [
-    "Thanks for your message! I'd be happy to help with any questions about Manish's services.",
-    "Manish specializes in ethical hacking, website development, and social media growth. Would you like to know more about any of these services?",
-    "Feel free to ask about pricing, availability, or specific services. I'm here to assist you 24/7.",
-    "Manish can identify and fix security vulnerabilities in websites and applications. Would you like more information about this service?",
-    "Our OTP services start at just ₹10/- per OTP. Would you like me to set up a direct connection with Manish to discuss this further?",
-    "Manish is currently available for new projects and consultations. How can we help you specifically?",
-  ];
-
+  
+  // Auto-scroll to bottom of messages
   useEffect(() => {
-    setMounted(true);
-    return () => setMounted(false);
-  }, []);
-
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
+  
+  // Handle body scroll when chat is open
   useEffect(() => {
-    scrollToBottom();
-    if (isOpen && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [isOpen, messages]);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const generateResponse = (userQuery: string): string => {
-    // Simple pattern matching for basic responses
-    const query = userQuery.toLowerCase();
-    
-    if (query.includes("price") || query.includes("cost") || query.includes("charge")) {
-      return "Our services have different pricing tiers. Website development starts from a custom quote based on requirements, OTP services from ₹10/-, and social media boosts from ₹0.50/- per unit. Would you like a detailed quote for a specific service?";
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
     }
     
-    if (query.includes("contact") || query.includes("phone") || query.includes("email")) {
-      return "You can contact Manish directly at +91 9371010561 (WhatsApp/Call) or via email at Ask.manish.regar@gmail.com. Would you like me to connect you?";
-    }
-    
-    if (query.includes("website") || query.includes("development")) {
-      return "Manish creates custom websites with responsive design, secure coding, and SEO optimization. Each project is tailored to the client's specific needs. Would you like to discuss a project?";
-    }
-    
-    if (query.includes("hack") || query.includes("security") || query.includes("bug")) {
-      return "Manish specializes in ethical hacking and identifying security vulnerabilities like price glitches. He provides detailed reports and actionable fixes to protect businesses from potential exploits.";
-    }
-    
-    // Return a random response if no patterns match
-    return aiResponses[Math.floor(Math.random() * aiResponses.length)];
-  };
-
-  const simulateTyping = (text: string, callback: (text: string) => void) => {
-    setIsTyping(true);
-    
-    // Add a typing indicator message
-    const typingId = `ai-typing-${Date.now()}`;
-    const typingMessage: Message = {
-      id: typingId,
-      sender: "ai",
-      text: "",
-      timestamp: Date.now(),
-      isTyping: true
+    return () => {
+      document.body.style.overflow = 'auto';
     };
-    setMessages(prev => [...prev, typingMessage]);
-    
-    // Calculate typing delay based on message length (making it realistic)
-    const typingDelay = Math.min(1000, Math.max(500, text.length * 20));
-    
-    setTimeout(() => {
-      // Remove the typing indicator and add the actual message
-      setMessages(prev => prev.filter(m => m.id !== typingId));
-      callback(text);
-      setIsTyping(false);
-    }, typingDelay);
-  };
-
+  }, [isOpen]);
+  
   const handleSendMessage = () => {
-    if (!inputValue.trim() || isTyping) return;
-
-    // Add user message
-    const userMessage: Message = {
-      id: `user-${Date.now()}`,
-      sender: "user",
-      text: inputValue,
-      timestamp: Date.now(),
-    };
+    if (!inputText.trim()) return;
     
-    setMessages(prev => [...prev, userMessage]);
-    setInputValue("");
-
-    // Generate and add AI response
-    const responseText = generateResponse(userMessage.text);
-    simulateTyping(responseText, (text) => {
-      setMessages(prev => [...prev, {
-        id: `ai-${Date.now()}`,
-        sender: "ai",
-        text,
-        timestamp: Date.now(),
-      }]);
-    });
+    // Add user message
+    setMessages(prev => [...prev, { sender: 'user', text: inputText }]);
+    
+    // Simple AI response logic (can be expanded or connected to a real API)
+    setTimeout(() => {
+      let response = "Thank you for your message! Manish will respond to your inquiry soon.";
+      
+      // Very basic response matching
+      if (inputText.toLowerCase().includes('service')) {
+        response = "Manish offers several services including ethical hacking, website development, OTP services, and social media growth. Would you like to know more about any specific service?";
+      } else if (inputText.toLowerCase().includes('price') || inputText.toLowerCase().includes('cost')) {
+        response = "Prices vary depending on the service. For website development and ethical hacking, please request a custom quote. OTP services start at ₹10, and social media boost services are very affordable.";
+      } else if (inputText.toLowerCase().includes('contact')) {
+        response = "You can contact Manish directly via WhatsApp at +91 9371010561, or email at Ask.manish.regar@gmail.com.";
+      }
+      
+      setMessages(prev => [...prev, { sender: 'ai', text: response }]);
+    }, 800);
+    
+    // Clear input
+    setInputText('');
   };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
+  
+  const toggleChat = () => {
+    setIsOpen(!isOpen);
+  };
+  
+  // Event handler for chat trigger button in NavMenu
+  useEffect(() => {
+    const chatTrigger = document.getElementById('chat-trigger');
+    if (chatTrigger) {
+      chatTrigger.addEventListener('click', toggleChat);
     }
-  };
-
-  if (!mounted) return null;
-
+    
+    return () => {
+      if (chatTrigger) {
+        chatTrigger.removeEventListener('click', toggleChat);
+      }
+    };
+  }, []);
+  
   return (
-    <>
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ y: "100%" }}
-            animate={{ y: 0 }}
-            exit={{ y: "100%" }}
-            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed bottom-0 right-0 w-full md:w-96 h-[80vh] bg-background/95 backdrop-blur-md z-50 border-t border-l border-primary/10 flex flex-col rounded-t-lg soft-glow"
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div 
+          className="fixed inset-0 bg-black z-50 flex items-center justify-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <motion.div 
+            className="w-full h-full md:w-4/5 md:h-[90%] md:rounded-xl border border-white/20 shadow-[0_0_25px_rgba(255,255,255,0.1)] overflow-hidden flex flex-col max-w-4xl"
+            initial={{ scale: 0.9, y: 20 }}
+            animate={{ scale: 1, y: 0 }}
+            exit={{ scale: 0.9, y: 20 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
-            <div className="p-4 border-b border-primary/10 flex justify-between items-center">
-              <h3 className="font-display font-bold text-primary flex items-center">
-                <span className="w-8 h-8 rounded-full border border-primary/20 flex items-center justify-center mr-2">
-                  <i className="fas fa-robot text-primary"></i>
-                </span>
-                Manish AI Assistant
-              </h3>
-              <motion.button 
-                whileTap={{ scale: 0.95 }}
-                onClick={onClose} 
-                className="w-8 h-8 rounded-full border border-primary/20 flex items-center justify-center soft-glow"
-                aria-label="Close chat"
+            {/* Chat Header */}
+            <div className="p-6 border-b border-white/10 flex justify-between items-center bg-black">
+              <div className="flex items-center">
+                <div className="w-12 h-12 rounded-full border border-white/30 flex items-center justify-center mr-4 shadow-[0_0_15px_rgba(255,255,255,0.15)]">
+                  <i className="fas fa-headset text-white text-xl"></i>
+                </div>
+                <div>
+                  <h3 className="text-white text-xl font-medium">Customer Support</h3>
+                  <p className="text-sm text-white/60">We're here to help you</p>
+                </div>
+              </div>
+              <button 
+                onClick={toggleChat}
+                className="p-2 rounded-full hover:bg-white/10 transition-colors border border-white/20"
               >
-                <i className="fas fa-times text-primary"></i>
-              </motion.button>
+                <i className="fas fa-times text-white"></i>
+              </button>
             </div>
             
-            <div className="flex-1 p-4 overflow-y-auto">
-              {messages.map((message) => (
+            {/* Chat Messages */}
+            <div className="p-6 space-y-6 flex-1 overflow-y-auto bg-black">
+              {messages.map((msg, idx) => (
                 <motion.div 
-                  key={message.id} 
-                  className={`mb-4 flex ${message.sender === "user" ? "justify-end" : ""}`}
+                  key={idx}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.2 }}
+                  transition={{ delay: 0.1 * idx }}
+                  className={`flex ${msg.sender === 'user' ? 'justify-end' : ''}`}
                 >
-                  {message.sender === "ai" && (
-                    <div className="w-8 h-8 rounded-full border border-primary/20 flex items-center justify-center mr-2 flex-shrink-0">
-                      <i className="fas fa-robot text-primary"></i>
+                  {msg.sender === 'ai' && (
+                    <div className="w-10 h-10 rounded-full border border-white/30 flex items-center justify-center mr-3 flex-shrink-0 shadow-[0_0_10px_rgba(255,255,255,0.1)]">
+                      <i className="fas fa-headset text-white"></i>
                     </div>
                   )}
-                  
-                  <div 
-                    className={`${
-                      message.sender === "ai" 
-                        ? "border border-primary/10 rounded-lg rounded-tl-none" 
-                        : "bg-primary/5 border border-primary/10 rounded-lg rounded-tr-none"
-                    } p-3 max-w-[80%] ${message.isTyping ? 'animate-pulse-subtle' : ''}`}
+                  <div className={`${
+                    msg.sender === 'ai' 
+                      ? 'bg-black border border-white/20 rounded-r-2xl rounded-bl-2xl' 
+                      : 'bg-white/10 border border-white/20 rounded-l-2xl rounded-br-2xl'
+                    } p-4 text-white max-w-[80%] shadow-[0_0_15px_rgba(255,255,255,0.05)]`}
                   >
-                    {message.isTyping ? (
-                      <div className="flex space-x-1">
-                        <div className="w-2 h-2 rounded-full bg-primary/50 animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                        <div className="w-2 h-2 rounded-full bg-primary/50 animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                        <div className="w-2 h-2 rounded-full bg-primary/50 animate-bounce" style={{ animationDelay: '300ms' }}></div>
-                      </div>
-                    ) : (
-                      <p className="text-sm">{message.text}</p>
-                    )}
+                    {msg.text}
                   </div>
-                  
-                  {message.sender === "user" && (
-                    <div className="w-8 h-8 rounded-full border border-primary/20 flex items-center justify-center ml-2 flex-shrink-0">
-                      <i className="fas fa-user text-primary"></i>
+                  {msg.sender === 'user' && (
+                    <div className="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center ml-3 flex-shrink-0 shadow-[0_0_10px_rgba(255,255,255,0.1)]">
+                      <i className="fas fa-user text-white"></i>
                     </div>
                   )}
                 </motion.div>
@@ -210,50 +149,31 @@ const ChatSupport = ({ isOpen, onClose }: ChatSupportProps) => {
               <div ref={messagesEndRef} />
             </div>
             
-            <div className="p-4 border-t border-primary/10">
-              <div className="flex gap-2">
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  onKeyDown={handleKeyPress}
-                  className="flex-1 bg-background border border-primary/20 rounded-md px-4 py-2 text-sm focus:outline-none focus:border-primary/50 transition-colors"
-                  placeholder="Ask me anything..."
-                  disabled={isTyping}
+            {/* Chat Input */}
+            <div className="p-6 border-t border-white/10 bg-black">
+              <div className="flex items-center bg-white/5 rounded-full border border-white/20 p-1 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+                <input 
+                  type="text" 
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleSendMessage();
+                  }}
+                  placeholder="Type your message..." 
+                  className="bg-transparent px-4 py-3 text-white w-full focus:outline-none" 
                 />
-                <motion.button
-                  whileTap={{ scale: 0.95 }}
+                <button 
                   onClick={handleSendMessage}
-                  className="w-10 h-10 rounded-full border border-primary/20 flex items-center justify-center soft-glow"
-                  disabled={isTyping || !inputValue.trim()}
+                  className="bg-white text-black p-3 rounded-full mr-1 hover:bg-white/90 transition-colors"
                 >
-                  <i className={`fas fa-paper-plane text-primary ${(!inputValue.trim() || isTyping) ? 'opacity-50' : ''}`}></i>
-                </motion.button>
-              </div>
-              <div className="mt-2 text-xs text-center text-primary/40">
-                Powered by advanced AI technology
+                  <i className="fas fa-paper-plane"></i>
+                </button>
               </div>
             </div>
           </motion.div>
-        )}
-      </AnimatePresence>
-      
-      <motion.button
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ 
-          scale: isOpen ? 0 : 1, 
-          opacity: isOpen ? 0 : 1 
-        }}
-        whileTap={{ scale: 0.95 }}
-        transition={{ duration: 0.2 }}
-        onClick={() => !isOpen && onClose()}
-        className="fixed bottom-6 right-6 w-14 h-14 rounded-full border border-primary/30 bg-background flex items-center justify-center shadow-lg z-40 soft-glow"
-        aria-label="Open AI chat support"
-      >
-        <i className="fas fa-robot text-primary"></i>
-      </motion.button>
-    </>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 

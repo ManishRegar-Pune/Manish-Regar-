@@ -1,49 +1,71 @@
-import { useState } from "react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import MenuPanel from "@/components/MenuPanel";
-import ChatSupport from "@/components/ChatSupport";
+import { useEffect } from 'react';
+import { setupScrollSpy } from '@/lib/utils';
+import { useTheme } from '@/lib/ThemeContext';
 
-// Sections
-import About from "@/sections/About";
-import Mission from "@/sections/Mission";
-import Abilities from "@/sections/Abilities";
-import Services from "@/sections/Services";
-import Shop from "@/sections/Shop";
-import SocialMedia from "@/sections/SocialMedia";
-import Contact from "@/sections/Contact";
+// Import all components
+import NavMenu from '@/components/NavMenu';
+import ChatSupport from '@/components/ChatSupport';
+import HeroSection from '@/components/HeroSection';
+import About from '@/components/About';
+import Mission from '@/components/Mission';
+import Abilities from '@/components/Abilities';
+import Services from '@/components/Services';
+import Shop from '@/components/Shop';
+import SocialMedia from '@/components/SocialMedia';
+import Contact from '@/components/Contact';
+import Footer from '@/components/Footer';
 
 const Home = () => {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [chatOpen, setChatOpen] = useState(false);
+  const { isDarkTheme, toggleTheme } = useTheme();
 
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
-
-  const toggleChat = () => {
-    setChatOpen(!chatOpen);
-  };
+  useEffect(() => {
+    // Setup scroll spy for active navigation
+    const cleanup = setupScrollSpy();
+    
+    // Add title to document
+    document.title = "Manish Regar - Ethical Hacker & Tech Enthusiast";
+    
+    return cleanup;
+  }, []);
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <MenuPanel isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
-      <ChatSupport isOpen={chatOpen} onClose={() => setChatOpen(!chatOpen)} />
+    <>
+      {/* Navigation */}
+      <NavMenu toggleTheme={toggleTheme} isDarkTheme={isDarkTheme} />
       
-      <Header onMenuToggle={toggleMenu} />
+      {/* Chat Support */}
+      <ChatSupport />
       
-      <main className="relative container mx-auto px-4 py-8 flex-grow">
+      {/* Main Content */}
+      <main className="container mx-auto px-4 pt-24 pb-16">
+        {/* Hero Section */}
+        <HeroSection />
+        
+        {/* About Section */}
         <About />
+        
+        {/* Mission Section */}
         <Mission />
+        
+        {/* Abilities Section */}
         <Abilities />
+        
+        {/* Services Section */}
         <Services />
+        
+        {/* Shop Section */}
         <Shop />
+        
+        {/* Social Media Section */}
         <SocialMedia />
+        
+        {/* Contact Section */}
         <Contact />
       </main>
       
+      {/* Footer */}
       <Footer />
-    </div>
+    </>
   );
 };
 

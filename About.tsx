@@ -5,9 +5,7 @@ const About = () => {
     { label: "Age", value: "14 years" },
     { label: "Location", value: "Pune, MH" },
     { label: "Education", value: "Class 9" },
-    { label: "Expertise", value: "Ethical Hacking" },
-    { label: "Birthday", value: "Feb 12, 2011" },
-    { label: "YouTube", value: "ManishCountryBall" }
+    { label: "Expertise", value: "Ethical Hacking" }
   ];
 
   return (
@@ -27,9 +25,9 @@ const About = () => {
         <h2 className="font-display text-3xl font-bold mb-6 text-primary mt-4">Manish Regar</h2>
         
         <div className="space-y-6">
-          <p className="text-primary/90 leading-relaxed">Hello, I'm Manish Regar, a 14-year-old tech enthusiast and ethical hacker born on February 12, 2011, hailing from Pune, Maharashtra, with roots in a small village in Rajasthan. Currently in Class 9, I'm passionate about using technology to make the internet safer and more accessible for everyone.</p>
+          <p className="text-primary/90 leading-relaxed">Hello, I'm Manish Regar, a 14-year-old tech enthusiast and ethical hacker from Pune, Maharashtra, with roots in a small village in Rajasthan. Currently in Class 9, I'm passionate about using technology to make the internet safer and more accessible for everyone.</p>
           
-          <p className="text-primary/90 leading-relaxed">My motto, "Honesty is the Best Policy", guides everything I do—from helping companies secure their systems to creating engaging content on my YouTube channel, ManishCountryBall.</p>
+          <p className="text-primary/90 leading-relaxed">My motto, "Honesty is the Best Policy", guides everything I do—from helping companies secure their systems to providing ethical solutions that respect privacy and security.</p>
           
           <p className="text-primary/90 leading-relaxed">As a self-taught hacker with a big heart, I specialize in identifying vulnerabilities like price glitches on e-commerce platforms, where users could exploit systems to purchase items at unfairly low prices.</p>
           

@@ -54,6 +54,12 @@ const Contact = () => {
       icon: "fas fa-exclamation-circle",
       email: "Manishregar1010@gmail.com",
       description: "For time-sensitive matters requiring immediate attention"
+    },
+    {
+      title: "Immediate Support",
+      icon: "fas fa-headset",
+      email: "Manishregar349@gmail.com",
+      description: "For immediate assistance, resolution, support, or reporting fraudulent activities"
     }
   ];
 
